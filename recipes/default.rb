@@ -24,41 +24,34 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-fqdn = node['set_fqdn']
-if fqdn
-  fqdn =~ /^([^.]+)/
-  hostname = $1
+fqdn = node["fqdn"]
+hostname = node.name
 
-  file '/etc/hostname' do
-    content "#{hostname}\n"
-    mode "0644"
-    notifies :reload, "ohai[reload]"
-  end
+file '/etc/hostname' do
+  content "#{hostname}\n"
+  mode "0644"
+  notifies :reload, "ohai[reload]"
+end
 
-  execute "hostname #{hostname}" do
-    only_if { node['hostname'] != hostname }
-    notifies :reload, "ohai[reload]"
-  end
+execute "hostname #{hostname}" do
+  only_if { node['hostname'] != hostname }
+  notifies :reload, "ohai[reload]"
+end
 
-  hostsfile_entry "localhost" do
-   ip_address "127.0.0.1"
-   hostname "localhost"
-   action :create
-  end
+hostsfile_entry "localhost" do
+  ip_address "127.0.0.1"
+  hostname "localhost"
+  action :create
+end
 
-  hostsfile_entry "set hostname" do
-    ip_address "127.0.1.1"
-    hostname fqdn
-    aliases [ hostname ]
-    action :create
-    notifies :reload, "ohai[reload]"
-  end
+hostsfile_entry "set hostname" do
+  ip_address "127.0.1.1"
+  hostname fqdn
+  aliases [ hostname ]
+  action :create
+  notifies :reload, "ohai[reload]"
+end
 
-  ohai "reload" do
-    action :nothing
-  end
-else
-  log "Please set the set_fqdn attribute to desired hostname" do
-    level :warn
-  end
+ohai "reload" do
+  action :nothing
 end
