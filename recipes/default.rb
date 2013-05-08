@@ -24,7 +24,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-fqdn = node["fqdn"]
+fqdn = node.fqdn
 hostname = node.name
 
 file '/etc/hostname' do
